@@ -1,13 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
-   <head>
-      <meta charset="UTF-8">
-       <title>My Webpage</title>
-     <link rel="stylesheet" href="styles.css">
-   </head>
-   </head>
-   <body>
-     <h1>HOW TO MISS UR BABY</h1>
-     <p><em>My Baby!!!</em></p>
-   </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Nebula Arcade</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Header / Navigation -->
+    <header class="navbar">
+        <div class="logo">👾 NEON NEBULA</div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#games">Games</a></li>
+                <li><a href="#highscores">High Scores</a></li>
+                <li><a href="#join">Join Club</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Insert Coin to Begin</h1>
+            <p>Step into the ultimate 80s synthwave arcade experience right in your browser.</p>
+            <a href="#games" class="btn">Play Now</a>
+        </div>
+    </section>
+
+    <!-- Games Grid Section -->
+    <section id="games" class="section-container">
+        <h2 class="section-title">Current Cabinets</h2>
+        <div class="grid-container">
+            <div class="card">
+                <div class="card-icon">🚀</div>
+                <h3>Star Smasher</h3>
+                <p>Blast through asteroid fields in glorious 8-bit color.</p>
+                <button class="card-btn">Launch</button>
+            </div>
+            <div class="card">
+                <div class="card-icon">🦎</div>
+                <h3>Pixel Pond</h3>
+                <p>Help the retro frog navigate busy digital highways.</p>
+                <button class="card-btn">Launch</button>
+            </div>
+            <div class="card">
+                <div class="card-icon">🧱</div>
+                <h3>Brick Breaker Ultra</h3>
+                <p>Smash neon blocks with a paddle and physics-defying balls.</p>
+                <button class="card-btn">Launch</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- High Scores Leaderboard Section -->
+    <section id="highscores" class="section-container bg-alt">
+        <h2 class="section-title">Top Players</h2>
+        <div class="leaderboard">
+            <div class="score-row header-row">
+                <span>Rank</span>
+                <span>Tag</span>
+                <span>Score</span>
+            </div>
+            <div class="score-row">
+                <span>🥇 1st</span>
+                <span class="player-tag">ACE</span>
+                <span>999,950</span>
+            </div>
+            <div class="score-row">
+                <span>🥈 2nd</span>
+                <span class="player-tag">NEO</span>
+                <span>845,200</span>
+            </div>
+            <div class="score-row">
+                <span>🥉 3rd</span>
+                <span class="player-tag">ZAP</span>
+                <span>721,110</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter / Call to Action Form -->
+    <section id="join" class="section-container">
+        <div class="cta-box">
+            <h2>Get Token Alerts</h2>
+            <p>Subscribe to receive 5 free virtual tokens every Friday night.</p>
+            <form class="cta-form" onsubmit="event.preventDefault(); alert('🚀 Level Up! You are subscribed.');">
+                <input type="email" placeholder="Enter your pilot email" required>
+                <button type="submit" class="btn">Subscribe</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Neon Nebula Arcade. Built for fun using pure HTML & CSS.</p>
+    </footer>
+
+</body>
 </html>
