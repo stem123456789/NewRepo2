@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Pond</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        body {
+            background-color: #0b0314;
+            color: #f3ecf8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        h1 {
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+        canvas {
+            background: #130624;
+            border: 4px solid #ff007f;
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.5);
+            display: block;
+            border-radius: 4px;
+        }
+        .controls {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #b19fcd;
+            text-align: center;
+        }
+        .back-btn {
+            margin-top: 20px;
+            display: inline-block;
+            background-color: #00ffff;
+            color: #0b0314;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 4px;
+            box-shadow: 0 0 10px #00ffff;
+            transition: transform 0.2s;
+        }
+        .back-btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>PIXEL POND</h1>
+        <p>Level: <span id="levelDisplay">1</span></p>
+    </div>
+
+    <!-- The Game Canvas -->
+    <canvas id="froggerCanvas" width="400" height="400"></canvas>
+
+    <div class="controls">
+        Use your keyboard <strong>Arrow Keys</strong> (Up, Down, Left, Right) to guide the frog!
+    </div>
+
+    <a href="index.html" class="back-btn">⬅ Back to Arcade</a>
+
+    <script>
+        const canvas = document.getElementById("froggerCanvas");
+        const ctx = canvas.getContext("2d");
+        const levelDisplay = document.getElementById("levelDisplay");
+
+        let level = 1;
+        const grid = 40;
+
+        // Frog Starting Position
+        let frog = {
+            x: grid * 5,
+            y: grid * 9,
+            width: 30,
+            height: 30
+        };
+
+        // Obstacles (Cars) Setup
+        let cars = [
+            { x: 0, y: grid * 2, width: 60, speed: 2, color: #ff007f },
+            { x: 200, y: grid * 2, width: 60, speed: 2, color: #ff007f },
+            { x: 100, y: grid * 4, width: 50, speed: -3, color: #7000ff },
+            { x: 300, y: grid * 4, width: 50, speed: -3, color: #7000ff },
+            { x: 50, y: grid * 6, width: 70, speed: 1.5, color: #ffff00 },
+            { x: 250, y: grid * 6, width: 70, speed: 1.5, color: #ffff00 },
+            { x: 0, y: grid * 8, width: 55, speed: -2.5, color: #ff5500 }
+        ];
+
+        // Keyboard Controls
+        window.addEventListener("keydown", function(e) {
+            if (e.key === "ArrowUp" && frog.y > 0) frog.y -= grid;
+            if (e.key === "ArrowDown" && frog.y < canvas.height - grid) frog.y += grid;
+            if (e.key === "ArrowLeft" && frog.x > 0) frog.x -= grid;
+            if (e.key === "ArrowRight" && frog.x < canvas.width - grid) frog.x += grid;
+        });
+
+        // Reset frog back to start zone
+        function resetFrog() {
+            frog.x = grid * 5;
+            frog.y = grid * 9;
+        }
+
+        // Main game engine loop
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Safety Zones
+            ctx.fillStyle = "#00ffff"; // Safe Goal Pond
+            ctx.fillRect(0, 0, canvas.width, grid * 1);
+            
+            ctx.fillStyle = "#250c46"; // Safe Start Zone
+            ctx.fillRect(0, grid * 9, canvas.width, grid);
+
+            // Draw and Update Cars
+            cars.forEach(car => {
+                car.x += car.speed * (1 + (level - 1) * 0.2); // Speed increases with level
+
+                // Screen wrapping loop logic
+                if (car.speed > 0 && car.x > canvas.width) car.x = -car.width;
+                if (car.speed < 0 && car.x < -car.width) car.x = canvas.width;
+
+                // Draw Car
+                ctx.fillStyle = car.color;
+                ctx.fillRect(car.x, car.y + 5, car.width, grid - 10);
+
+                // Collision Detection Box Formula
+                if (frog.x < car.x + car.width &&
+                    frog.x + frog.width > car.x &&
+                    frog.y < car.y + grid &&
+                    frog.y + frog.height > car.y) {
+                    alert("💥 Squished! Back to level 1.");
+                    level = 1;
+                    levelDisplay.textContent = level;
+                    resetFrog();
+                }
+            });
+
+            // Draw Frog
+            ctx.fillStyle = "#39ff14"; // Neon green frog color
+            ctx.fillRect(frog.x + 5, frog.y + 5, frog.width, frog.height);
+
+            // Win condition (reaching the top goal pond)
+            if (frog.y < grid * 1) {
+                level++;
+                levelDisplay.textContent = level;
+                alert("🎉 Level Passed! Speed increasing.");
+                resetFrog();
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Launch Game Loop
+        gameLoop();
+    </script>
+</body>
+</html>
