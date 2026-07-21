@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Star Smasher</title>
+    <title>Star Smasher: Dodge Storm</title>
     <style>
         * {
             margin: 0;
@@ -26,15 +26,15 @@
             margin-bottom: 15px;
         }
         h1 {
-            color: #00ffff;
-            text-shadow: 0 0 10px #00ffff;
+            color: #ff007f;
+            text-shadow: 0 0 10px #ff007f;
             font-size: 2rem;
             margin-bottom: 5px;
         }
         canvas {
             background: #05010a;
-            border: 4px solid #ff007f;
-            box-shadow: 0 0 20px rgba(255, 0, 127, 0.5);
+            border: 4px solid #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
             display: block;
             border-radius: 4px;
         }
@@ -66,15 +66,15 @@
 
     <div class="header">
         <h1>STAR SMASHER</h1>
-        <p>Asteroids Smashed: <span id="scoreDisplay">0</span></p>
+        <p>Time Survived: <span id="scoreDisplay">0s</span></p>
     </div>
 
     <!-- The Game Screen -->
     <canvas id="spaceCanvas" width="400" height="500"></canvas>
 
     <div class="controls">
-        Use <strong>A / D</strong> or <strong>Left / Right Arrows</strong> to move.<br>
-        Press <strong>SPACEBAR</strong> to fire laser cannons!
+        Use <strong>A / D</strong> or <strong>Left / Right Arrows</strong> to dodge.<br>
+        Lasers are offline! Survive the asteroid storm.
     </div>
 
     <a href="index.html" class="back-btn">⬅ Back to Arcade</a>
@@ -86,48 +86,36 @@
 
         let score = 0;
         let keys = {};
+        let frameCount = 0;
 
         // Player Ship configuration
         const player = {
             x: canvas.width / 2 - 15,
-            y: canvas.height - 50,
+            y: canvas.height - 60,
             width: 30,
             height: 30,
-            speed: 5
+            speed: 6
         };
 
-        // Projectile Arrays
-        let lasers = [];
+        // Obstacle Tracking
         let asteroids = [];
-        let asteroidSpawnTimer = 0;
+        let asteroidSpawnRate = 25; // Spawns an asteroid every X frames
+        let baseSpeedMultiplier = 1.0;
 
         // Keyboard Event Listeners
         window.addEventListener("keydown", e => { keys[e.key] = true; });
-        window.addEventListener("keyup", e => { 
-            keys[e.key] = false; 
-            if (e.key === " " || e.key === "Spacebar") {
-                fireLaser();
-            }
-        });
-
-        function fireLaser() {
-            lasers.push({
-                x: player.x + player.width / 2 - 2,
-                y: player.y,
-                width: 4,
-                height: 12,
-                speed: 7
-            });
-        }
+        window.addEventListener("keyup", e => { keys[e.key] = false; });
 
         function spawnAsteroid() {
-            const size = Math.random() * 20 + 15;
+            const size = Math.random() * 25 + 15; // Random sizes
             asteroids.push({
                 x: Math.random() * (canvas.width - size),
                 y: -size,
                 width: size,
                 height: size,
-                speed: Math.random() * 2 + 1.5
+                // Asteroids drop faster as you survive longer
+                speed: (Math.random() * 3 + 2) * baseSpeedMultiplier,
+                color: Math.random() > 0.5 ? "#7000ff" : "#ff007f"
             });
         }
 
@@ -142,12 +130,25 @@
         // Core Game Engine loop
         function gameLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            frameCount++;
 
-            // Handle horizontal controls
+            // Increment survival score every 60 frames (roughly 1 second)
+            if (frameCount % 60 === 0) {
+                score++;
+                scoreDisplay.textContent = score + "s";
+                
+                // Ramp up the difficulty over time
+                if (score % 5 === 0) {
+                    baseSpeedMultiplier += 0.15; // Asteroids fall faster
+                    if (asteroidSpawnRate > 8) asteroidSpawnRate -= 2; // Spawns increase
+                }
+            }
+
+            // Handle horizontal movement controls
             if ((keys["ArrowLeft"] || keys["a"]) && player.x > 0) player.x -= player.speed;
             if ((keys["ArrowRight"] || keys["d"]) && player.x < canvas.width - player.width) player.x += player.speed;
 
-            // Draw Fighter Ship (Triangle styling)
+            // Draw Fighter Ship (Sleek Cyan Triangle style)
             ctx.fillStyle = "#00ffff";
             ctx.beginPath();
             ctx.moveTo(player.x + player.width / 2, player.y);
@@ -156,46 +157,28 @@
             ctx.closePath();
             ctx.fill();
 
-            // Handle lasers firing up the screen
-            lasers.forEach((laser, lIndex) => {
-                laser.y -= laser.speed;
-                if (laser.y < 0) lasers.splice(lIndex, 1);
-
-                ctx.fillStyle = "#ff007f";
-                ctx.fillRect(laser.x, laser.y, laser.width, laser.height);
-            });
-
-            // Handle incoming target asteroids
-            asteroidSpawnTimer++;
-            if (asteroidSpawnTimer > 40) {
+            // Handle spawning target asteroids
+            if (frameCount % asteroidSpawnRate === 0) {
                 spawnAsteroid();
-                asteroidSpawnTimer = 0;
             }
 
+            // Move and draw asteroids
             asteroids.forEach((ast, aIndex) => {
                 ast.y += ast.speed;
+
+                // Remove out-of-bounds asteroids safely
                 if (ast.y > canvas.height) {
-                    alert("💥 An asteroid bypassed your shields! Game Over.");
-                    document.location.reload();
+                    asteroids.splice(aIndex, 1);
+                    return;
                 }
 
-                // Draw simple block target asteroid
-                ctx.fillStyle = "#7000ff";
+                // Draw asteroid block
+                ctx.fillStyle = ast.color;
                 ctx.fillRect(ast.x, ast.y, ast.width, ast.height);
 
-                // Laser hitting an asteroid
-                lasers.forEach((laser, lIndex) => {
-                    if (checkCollision(laser, ast)) {
-                        asteroids.splice(aIndex, 1);
-                        lasers.splice(lIndex, 1);
-                        score++;
-                        scoreDisplay.textContent = score;
-                    }
-                });
-
-                // Asteroid colliding directly into user ship
+                // Asteroid colliding directly into user ship = Game Over
                 if (checkCollision(player, ast)) {
-                    alert("💥 Direct impact! Critical Hull Failure. Game Over.");
+                    alert("💥 CRASH! You survived for " + score + " seconds.");
                     document.location.reload();
                 }
             });
