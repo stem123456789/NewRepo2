@@ -93,15 +93,15 @@
             height: 30
         };
 
-        // Obstacles (Cars) Setup
+        // Fixed: Hex colors wrapped in valid string quotes
         let cars = [
-            { x: 0, y: grid * 2, width: 60, speed: 2, color: #ff007f },
-            { x: 200, y: grid * 2, width: 60, speed: 2, color: #ff007f },
-            { x: 100, y: grid * 4, width: 50, speed: -3, color: #7000ff },
-            { x: 300, y: grid * 4, width: 50, speed: -3, color: #7000ff },
-            { x: 50, y: grid * 6, width: 70, speed: 1.5, color: #ffff00 },
-            { x: 250, y: grid * 6, width: 70, speed: 1.5, color: #ffff00 },
-            { x: 0, y: grid * 8, width: 55, speed: -2.5, color: #ff5500 }
+            { x: 0, y: grid * 2, width: 60, speed: 2, color: "#ff007f" },
+            { x: 200, y: grid * 2, width: 60, speed: 2, color: "#ff007f" },
+            { x: 100, y: grid * 4, width: 50, speed: -3, color: "#7000ff" },
+            { x: 300, y: grid * 4, width: 50, speed: -3, color: "#7000ff" },
+            { x: 50, y: grid * 6, width: 70, speed: 1.5, color: "#ffff00" },
+            { x: 250, y: grid * 6, width: 70, speed: 1.5, color: "#ffff00" },
+            { x: 0, y: grid * 8, width: 55, speed: -2.5, color: "#ff5500" }
         ];
 
         // Keyboard Controls
@@ -167,6 +167,7 @@
 
             requestAnimationFrame(gameLoop);
         }
+
         // Launch Game Loop
         gameLoop();
     </script>
